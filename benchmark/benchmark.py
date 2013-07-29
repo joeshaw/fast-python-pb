@@ -20,6 +20,7 @@ from timeit import Timer
 
 import person_proto
 import person_pb2
+import person_palm
 import json
 import simplejson
 import cPickle
@@ -124,6 +125,25 @@ def useStandardPb():
   newLincoln = person_pb2.Person()
   newLincoln.ParseFromString(serializedLincoln)
 
+def usePALM():
+    lincoln = person_palm.Person(
+        name='Abraham Lincoln',
+        birth_year=1809)
+
+    lincoln.nicknames.append('Honest Abe')
+    lincoln.nicknames.append('Abe')
+
+    lincoln.facts.append(person_palm.Fact(name='Born In',
+                             content='Kentucky'))
+    lincoln.facts.append(person_palm.Fact(name='Died In',
+                             content='Washington D.C.'))
+    lincoln.facts.append(person_palm.Fact(name='Greatest Speech',
+                             content=GETTYSBURG))
+
+    serializedLincoln = lincoln.dumps()
+
+    newLincoln = person_palm.Person(serializedLincoln)
+
 
 def useLWPB(codec):
   """Test protocol buffer serialization with lwpb."""
@@ -182,6 +202,10 @@ def main():
     print "Protocol Buffer (lwpb)"
     timer = Timer("useLWPB(lwpb_codec)", "from __main__ import useLWPB, lwpb_codec")
     print timer.timeit(10000)
+
+  print "PALM"
+  timer = Timer("usePALM()", "from __main__ import usePALM")
+  print timer.timeit(10000)
 
   print "cPickle"
   timer = Timer("useCPickle()", "from __main__ import useCPickle")
